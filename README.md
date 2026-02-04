@@ -1,25 +1,24 @@
-# tcp-e-chat
+# EIM  - Instant Messenger 
 
 ## Overview
 
-This is a text-only chatting program that is implented via a TCP client-server model. User(s) can send messages that will be recorded to a server-side `chat_log.txt` text file. 
+EIM is a simple TCP-based instant messaging experiment built for learning. Currently, it supports text-only messages sent over a raw TCP connection. All messages are appended to a server-side `chat_log.txt` file. This tiny chat system will allow you to chat with yourself from any device in your home network.
 
 ### Currently limitations 
 
-- Only the server side code is supported
-- Clients need to use to use an external program such as `nc` to send messages
-- Clients can only join from within the same machine/local area network
-
-it supports one user writting messages to a text file to the root directory. 
+- Only the server-side program exists
+- Clients must use an external tool (e.g., `nc`) to send messages
+- Only works within the same machine or local network
+- Only one client can write to the chat log at a time
 
 ### Working on
 
-- Adding support for mutiple clients
+- Support for multiple simultaneous clients
 
 ### Coming additions 
 
-- Client side program for sending messages
+- A dedicated client program for sending messages
 
 ### How to run
 
-Clone the repository and run `make` in the project directory. The compiled binary will appear in the `bin/` folder. Use a program like that can send TCP packets like `nc` to send messages. 
+To run the server, clone the repository and run `make -f server.mk` in the project directory. The compiled binary will appear in a `bin/` folder. Start the server with `./bin/eim`. Use a TCP tool like `nc` to connect and send messages to the server

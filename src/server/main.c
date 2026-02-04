@@ -11,6 +11,12 @@ int main() {
     int socketfd = start_socket();
 
     int connfd = accept_conn(socketfd);
+    
+    char welcome_msg[] = {"Welcome to EIM!\n"};
+    
+    if (connfd) {
+        write(connfd, welcome_msg, sizeof(welcome_msg));
+    }
 
     chat(connfd);
 

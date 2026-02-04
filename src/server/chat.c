@@ -5,13 +5,14 @@
 
 void chat(int connfd) {
 
-    char buffer[1024];
+    char client_msg_buf[1024];
+    char client_name_buf[] = {"Client: "};
 
     while (1) {
         // TODO: Change to memset? memset(s, 0, n)
-        bzero(buffer, 1024);
+        bzero(client_msg_buf, 1024);
 
-        read(connfd, buffer, sizeof(buffer));
+        read(connfd, client_msg_buf, sizeof(client_msg_buf));
 
         FILE *fptr = fopen("chat_log.txt", "a");
         if (fptr == NULL) {
@@ -19,11 +20,13 @@ void chat(int connfd) {
             exit(0);
         }
 
-        fprintf(fptr, "Client: %s\n", buffer);
-        printf("From client: %s\n", buffer);
+        fprintf(fptr, "Client: %s\n", client_msg_buf);
+        printf("From Client: %s\n", client_msg_buf);
+        write(connfd, client_name_buf, sizeof(client_name_buf));
+        write(connfd, client_msg_buf, sizeof(client_msg_buf));
         fclose(fptr);
 
-        if (strncmp("exit", buffer, 4) == 0) {
+        if (strncmp("exit", client_msg_buf, 4) == 0) {
             printf("Server exit...\n");
             close(connfd);
             break;
