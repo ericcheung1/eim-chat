@@ -10,17 +10,17 @@ int main() {
 
     int socketfd = start_socket();
 
-    int connfd = accept_conn(socketfd);
+    accept_conn(socketfd);
     
-    char welcome_msg[] = {"Welcome to EIM!\n"};
+    // char welcome_msg[] = {"Welcome to EIM!\n"};
     
-    if (connfd) {
-        write(connfd, welcome_msg, sizeof(welcome_msg));
-    }
+    // if (connfd) {
+    //     write(connfd, welcome_msg, sizeof(welcome_msg));
+    // }
 
-    chat(connfd);
+    // chat(connfd);
 
-    close(socketfd);
+    // close(socketfd);
 
     return 0;
 }

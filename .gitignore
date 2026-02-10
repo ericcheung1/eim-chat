@@ -1,6 +1,7 @@
 bin/
 *.txt
 server.c
+src/server/example.c
 
 # Prerequisites
 *.d

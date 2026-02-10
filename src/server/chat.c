@@ -10,7 +10,8 @@ void chat(int connfd) {
 
     while (1) {
         // TODO: Change to memset? memset(s, 0, n)
-        bzero(client_msg_buf, 1024);
+        // bzero(client_msg_buf, 1024);
+        memset(client_msg_buf, 0, sizeof(client_msg_buf));
 
         read(connfd, client_msg_buf, sizeof(client_msg_buf));
 
