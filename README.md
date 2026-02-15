@@ -2,7 +2,7 @@
 
 ## Overview
 
-EIM is a simple TCP-based instant messaging experiment built for learning. Currently, it supports text-only messages sent over a raw TCP connection. All messages are appended to a server-side `chat_log.txt` file. This tiny chat system will allow you to chat with yourself from any device in your home network.
+EIM is a simple TCP-based instant messaging project made for learning. Currently, it supports text-only messages sent over a raw TCP connections. All messages are appended to a server-side `chat_log.txt` file. This system will allow you to chat with yourself from any device in your home network.
 
 ### Currently limitations 
 
@@ -13,7 +13,8 @@ EIM is a simple TCP-based instant messaging experiment built for learning. Curre
 
 ### Working on
 
-- Support for multiple simultaneous clients
+- Support for multiple simultaneous clients - DONE
+- Viewing messages on client-side
 
 ### Coming additions 
 

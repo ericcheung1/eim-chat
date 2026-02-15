@@ -107,31 +107,31 @@ void handle_client_data(int max_clients, int client_socket[], fd_set *readfds) {
     int value_read;
 
     for (int i = 0; i < max_clients; i++) {
-            sd = client_socket[i];
+        sd = client_socket[i];
 
-            if (FD_ISSET(sd, readfds)) {
-                memset(client_msg_buf, 0, sizeof(client_msg_buf));
-                value_read = read(sd, client_msg_buf, sizeof(client_msg_buf));
-                FILE *fptr = fopen("chat_log.txt", "a");
-                if (fptr == NULL) {
-                    printf("Error in opening chat log...\n");
-                    exit(0);
-                }
+        if (FD_ISSET(sd, readfds)) {
+            memset(client_msg_buf, 0, sizeof(client_msg_buf));
+            value_read = read(sd, client_msg_buf, sizeof(client_msg_buf));
+            FILE *fptr = fopen("chat_log.txt", "a");
+            if (fptr == NULL) {
+                printf("Error in opening chat log...\n");
+                exit(0);
+            }
 
-                fprintf(fptr, "Client: %s\n", client_msg_buf);
-                fclose(fptr);
+            fprintf(fptr, "Client: %s\n", client_msg_buf);
+            fclose(fptr);
 
-                if (strncmp("exit", client_msg_buf, 4) == 0) {
-                    printf("Disconnecting client on fd: %d\n", sd);
-                    close(sd);
-                    client_socket[i] = 0;
-                } else {
-                    // set the string terminating NULL byte
-                    // on the end of the data read
-                    client_msg_buf[value_read] = '\0';
-                    send(sd, client_msg_buf, strlen(client_msg_buf), 0);
-                }
-            } 
-        }
+            if (strncmp("exit", client_msg_buf, 4) == 0) {
+                printf("Disconnecting client on fd: %d\n", sd);
+                close(sd);
+                client_socket[i] = 0;
+            } else {
+                // set the string terminating NULL byte
+                // on the end of the data read
+                client_msg_buf[value_read] = '\0';
+                send(sd, client_msg_buf, strlen(client_msg_buf), 0);
+            }
+        } 
+    }
 }
 
