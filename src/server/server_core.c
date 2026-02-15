@@ -48,59 +48,11 @@ int start_socket() {
     return socket_fd;
 }
 
-void accept_conn(int socket_fd) {
-    
-    // int conn_fd;
-    int client_socket[5];
-    int max_clients = 5;
-    // int max_sd;
-    // int sd;
-    int activity;
-    int new_socket;
-    // int valread;
-    struct sockaddr_in client_addr;
-    socklen_t len = sizeof(client_addr);
-    fd_set readfds;
-    // char buffer[1024];
-    char greeting[] = {"Hello!\n"};
+int *build_client_socket_list(int max_clients) {
+    int *client_socket_list = malloc(max_clients * sizeof(int));
+    memset(client_socket_list, 0, sizeof(*client_socket_list));
 
-    // memset(client_socket, 0, sizeof(client_socket));
-    for (int i = 0; i < max_clients; i++) {
-        client_socket[i] = 0;
-    }
-
-    // select loop
-    while (1) {
-        int max_sd = build_fd_set(&readfds, socket_fd, max_clients, client_socket);
-
-        activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
-        printf("activity right now: %d\n", activity);
-
-        if ((activity < 0) && (errno != EINTR)) {
-            printf("Select failed...\n");
-        }
-
-        // accepts new client sockets
-        if (FD_ISSET(socket_fd, &readfds)) {
-            if ((new_socket = accept(socket_fd, (SA*)&client_addr, &len)) < 0) {
-                printf("accepting failed\n");
-                exit(0);
-            }
-
-            printf("new socket: %d\n", new_socket);
-            send(new_socket, greeting, strlen(greeting),0);
-
-            for (int i = 0; i < max_clients; i++) {
-                if (client_socket[i] == 0) {
-                    client_socket[i] = new_socket;
-                    printf("Adding to list as %d\n", i);
-                    break;
-                }
-            }
-        }
-        
-        handle_client_data(max_clients, client_socket, &readfds);
-    }
+    return client_socket_list;
 }
 
 // TODO: fix build_fd_set
@@ -111,14 +63,11 @@ int build_fd_set(fd_set *read_fds, int listen_socket, int max_clients, int clien
 
     for (int i = 0; i < max_clients; i++) {
         int sd = client_list[i];
-
-        if (sd > 0) {
+        if (sd > 0) 
             FD_SET(sd, read_fds);
-        }
 
-        if (sd > max_sd) {
+        if (sd > max_sd) 
             max_sd = sd;
-        }
     }
 
     return max_sd;
@@ -126,10 +75,32 @@ int build_fd_set(fd_set *read_fds, int listen_socket, int max_clients, int clien
 
 
 // TODO: accept_new_client, remove_client, 
-// int accept_new_client(int listen_socket, fd_set *read_fds)
+void accept_new_client(int listen_socket, fd_set *read_fds, int client_socket[], int max_clients) {
+    struct sockaddr_in cli_adr;
+    socklen_t cli_adr_len = sizeof(cli_adr);
+    int new_socket;
+    char welcome_msg[] = {"Welcome to EIM!\n"};
+
+    if (FD_ISSET(listen_socket, read_fds)) {
+        if ((new_socket = accept(listen_socket, (SA*)&cli_adr, &cli_adr_len)) < 0) {
+            printf("accepting connection failed\n");
+            exit(0);
+        }
+
+        printf("new socket connection as fd #%d\n", new_socket);
+        write(new_socket, welcome_msg, sizeof(welcome_msg));
+
+        for (int i = 0; i < max_clients; i++) {
+            if (client_socket[i] == 0) {
+                client_socket[i] = new_socket;
+                printf("adding client socket to list as #%d\n", i);
+                break;
+            }
+        }
+    }
+}
 
 // void remove_client(int client_fds[], int index);
-
 void handle_client_data(int max_clients, int client_socket[], fd_set *readfds) {
     int sd;
     char client_msg_buf[1024];
