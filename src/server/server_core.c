@@ -19,10 +19,10 @@ int start_socket() {
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     
     if (socket_fd == -1) {
-        printf("Socket creation failed...\n");
+        printf("socket creation failed...\n");
         exit(0);
     } else {
-        printf("Socket created successfully...!\n");
+        printf("socket created successfully...!\n");
     }
 
     struct sockaddr_in server_addr;
@@ -32,17 +32,17 @@ int start_socket() {
     server_addr.sin_port = htons(8080);
 
     if (bind(socket_fd, (SA*)&server_addr, sizeof(server_addr)) != 0) {
-        printf("Socket binding failed...\n");
+        printf("socket binding failed...\n");
         exit(0);
     } else {
-        printf("Socket binded successfully...!\n");
+        printf("socket binded successfully...!\n");
     }
 
     if (listen(socket_fd, 5) != 0) {
-        printf("Server listening failed...\n");
+        printf("server listening failed...\n");
         exit(0);
     } else {
-        printf("Server listening sucessfully...\n");
+        printf("server listening sucessfully...\n");
     }
 
     return socket_fd;
@@ -114,7 +114,7 @@ void handle_client_data(int max_clients, int client_socket[], fd_set *readfds) {
             value_read = read(sd, client_msg_buf, sizeof(client_msg_buf));
             FILE *fptr = fopen("chat_log.txt", "a");
             if (fptr == NULL) {
-                printf("Error in opening chat log...\n");
+                printf("error in opening chat log...\n");
                 exit(0);
             }
 
@@ -122,7 +122,7 @@ void handle_client_data(int max_clients, int client_socket[], fd_set *readfds) {
             fclose(fptr);
 
             if (strncmp("exit", client_msg_buf, 4) == 0) {
-                printf("Disconnecting client on fd: %d\n", sd);
+                printf("disconnecting client on fd: %d\n", sd);
                 close(sd);
                 client_socket[i] = 0;
             } else {
