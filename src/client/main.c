@@ -7,36 +7,33 @@
 
 #define SA struct sockaddr
 
-void send_messages(int client_socket) {
+void send_messages(int client_socket, char username[]) {
     char buff[1024];
-    char c;
-    int n;
+    // char c;
+    // int n;
+
+    int username_len = strlen(username);
+    // printf("username length: %d\n", username_len);
 
     while (1) {
         memset(buff, 0, sizeof(buff));
-        n = 0;
+        // strncpy(buff, username, username_len);
+        // n = 0;
 
-        while (1) {
-            c = getchar();
-            if (c == '\n') {
-                break;
-            } else {
-                buff[n] = c;
-                n++;
-            }
-        }
-
-        write(client_socket, buff, sizeof(buff));
+        fgets(buff, sizeof(buff), stdin);
 
         if (strncmp("exit", buff, 4) == 0) {
             printf("client exit\n");
             break;
         }
 
+        write(client_socket, username, username_len);
+        write(client_socket, buff, sizeof(buff));
+
         memset(buff, 0, sizeof(buff));
 
-        read(client_socket, buff, sizeof(buff));
-        printf("User: %s\n", buff);
+        // read(client_socket, buff, sizeof(buff));
+        // printf("User: %s\n", buff);
     }
 }
 
@@ -44,7 +41,7 @@ int main() {
 
     int client_socket = socket(AF_INET, SOCK_STREAM, 0);
     char welcome_buff[1024];
-    
+    char user_name[1024];
 
     if (client_socket == -1) {
         printf("client socket creation failed...\n");
@@ -68,8 +65,17 @@ int main() {
         printf("%s\n", welcome_buff);
     }
 
+    printf("enter username: ");
     
-    send_messages(client_socket);
+    // int n = 0;
+    fgets(user_name, sizeof(user_name), stdin);
+    // printf("username length: %d\n", username_len);
+    user_name[strlen(user_name)-1] = ':';
+    user_name[strlen(user_name)] = ' ';
+    // for (int i = 0; i < strlen(user_name); i++)
+    //     printf("%c ", user_name[i]);
+
+    send_messages(client_socket, user_name);
 
     close(client_socket);
 

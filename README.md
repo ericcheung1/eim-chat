@@ -7,11 +7,11 @@ EIM is a simple TCP-based instant messaging project. Currently, it supports text
 ### Current limitations 
 
 - Only works within the same machine or local network
-- Cannot view messages sent from other clients on client-side
+- Messages are not broadcast to other clients
 
 ### Working on
 
-- Viewing messages on client-side
+- Broadcasting messages to all connected client-side
 
 ### How to run
 
