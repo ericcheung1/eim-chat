@@ -38,7 +38,7 @@ int start_socket() {
         printf("socket binded successfully...!\n");
     }
 
-    if (listen(socket_fd, 5) != 0) {
+    if (listen(socket_fd, 5) != 0) { // listen(fd, backlog);
         printf("server listening failed...\n");
         exit(0);
     } else {
@@ -79,7 +79,7 @@ void accept_new_client(int listen_socket, fd_set *read_fds, int client_socket[],
     struct sockaddr_in cli_adr;
     socklen_t cli_adr_len = sizeof(cli_adr);
     int new_socket;
-    char welcome_msg[] = {"Welcome to EIM!\n"};
+    // char welcome_msg[] = {"Welcome to EIM!\n"};
 
     if (FD_ISSET(listen_socket, read_fds)) {
         if ((new_socket = accept(listen_socket, (SA*)&cli_adr, &cli_adr_len)) < 0) {
@@ -88,7 +88,7 @@ void accept_new_client(int listen_socket, fd_set *read_fds, int client_socket[],
         }
 
         printf("new socket connection as fd #%d\n", new_socket);
-        write(new_socket, welcome_msg, sizeof(welcome_msg));
+        // write(new_socket, welcome_msg, sizeof(welcome_msg));
 
         for (int i = 0; i < max_clients; i++) {
             if (client_socket[i] == 0) {
@@ -108,30 +108,36 @@ void handle_client_data(int max_clients, int client_socket[], fd_set *readfds) {
 
     for (int i = 0; i < max_clients; i++) {
         sd = client_socket[i];
+        // printf("handle_client_data sd: %d\n", sd);
 
         if (FD_ISSET(sd, readfds)) {
             memset(client_msg_buf, 0, sizeof(client_msg_buf));
             value_read = read(sd, client_msg_buf, sizeof(client_msg_buf));
-            FILE *fptr = fopen("chat_log.txt", "a");
-            if (fptr == NULL) {
-                printf("error in opening chat log...\n");
-                exit(0);
-            }
 
-            fprintf(fptr, "Client: %s\n", client_msg_buf);
-            fclose(fptr);
-
-            if (strncmp("exit", client_msg_buf, 4) == 0) {
+            if (value_read == 0) {
                 printf("disconnecting client on fd: %d\n", sd);
                 close(sd);
                 client_socket[i] = 0;
-            } else {
-                // set the string terminating NULL byte
-                // on the end of the data read
-                client_msg_buf[value_read] = '\0';
-                send(sd, client_msg_buf, strlen(client_msg_buf), 0);
+                break;
             }
+
+            for (int j = 0; j < max_clients; j++) {
+                int send_sd = client_socket[j];
+                printf("send_fd: %d \n", send_sd);
+                if (send_sd != sd && send_sd > 0) 
+                    write(send_sd, client_msg_buf, value_read);
+            }
+            
+            FILE *write_ptr = fopen("chat_log.txt", "a");
+            if (write_ptr == NULL) {
+                printf("error in writing to chat log...\n");
+                exit(0);
+            }
+
+            fputs(client_msg_buf, write_ptr);
+            fclose(write_ptr);
+
+            memset(client_msg_buf, 0, sizeof(client_msg_buf));
         } 
     }
 }
-

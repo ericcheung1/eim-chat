@@ -28,6 +28,7 @@ int main() {
         handle_client_data(max_clients, client_list, &readfds);
     }
 
+    printf("program closing...\n");
     free(client_list);
     close(socketfd);
 
