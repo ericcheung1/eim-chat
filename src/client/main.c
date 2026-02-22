@@ -14,7 +14,7 @@ int main() {
     char username_buff[1024];
 
     int request_socket = start_client_socket();
-    char* user_name = get_username(username_buff);
+    get_username(username_buff);
 
     while (1) {
         int max_sd = build_fd_set(&readfds, request_socket);
@@ -23,8 +23,14 @@ int main() {
         if ((activity < 0) && (errno != EINTR)) 
             printf("select() failed...!\n");
 
-        accept_broadcast(request_socket, &readfds);
-        send_messages(request_socket, &readfds, user_name);
+        if (accept_broadcast(request_socket, &readfds) == 0) {
+            printf("sever was shut down, closing client...\n");
+            break;
+        }
+        if (send_messages(request_socket, &readfds, username_buff) == 0) {
+            printf("closing client...\n");
+            break;
+        }
     }
 
     close(request_socket);

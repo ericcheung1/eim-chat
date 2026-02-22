@@ -2,16 +2,16 @@
 
 ## Overview
 
-EIM is a simple TCP-based instant messaging project. Currently, it supports text-only messages sent over a raw TCP connections. All messages are appended to a server-side `chat_log.txt` file. This system will allow you to chat with yourself from any device in your home network.
+EIM is a simple TCP-based instant messaging system. It supports multi-client text-only messages sent over a raw TCP connections. All messages are appended to a server-side `chat_log.txt` file and broadcast to all other connected clients. This system allows you to chat with yourself from any device on your home network.
 
-### Current limitations 
+### Limitations 
 
 - Only works within the same machine or local network
-- Messages are not broadcast to other clients
 
-### Working on
+### Potential Additions
 
-- Broadcasting messages to all connected client-side
+- A way to explicitly bind client to a specific IP 
+- Timestamps in message logs
 
 ### How to run
 

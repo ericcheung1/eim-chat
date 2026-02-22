@@ -28,7 +28,7 @@ int start_socket() {
     struct sockaddr_in server_addr;
 
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     server_addr.sin_port = htons(8080);
 
     if (bind(listen_socket, (SA*)&server_addr, sizeof(server_addr)) != 0) {
@@ -74,8 +74,6 @@ int build_fd_set(fd_set *readfds, int listen_socket, int max_clients, int client
     return max_sd;
 }
 
-
-// TODO: accept_new_client, remove_client, 
 void accept_new_client(int listen_socket, fd_set *readfds, int client_socket[], int max_clients) {
     struct sockaddr_in cli_adr;
     socklen_t cli_adr_len = sizeof(cli_adr);
@@ -87,12 +85,12 @@ void accept_new_client(int listen_socket, fd_set *readfds, int client_socket[], 
             exit(0);
         }
 
-        printf("new socket connection as fd #%d\n", new_socket);
+        printf("new connection as fd #%d\n", new_socket);
 
         for (int i = 0; i < max_clients; i++) {
             if (client_socket[i] == 0) {
                 client_socket[i] = new_socket;
-                printf("adding client socket to list in slot #%d\n", i);
+                printf("adding fd #%d to client list in slot #%d\n", new_socket, i);
                 break;
             }
         }
@@ -113,7 +111,7 @@ void handle_client_data(int max_clients, int client_socket[], fd_set *readfds) {
             client_msg_buf[value_read] = '\0';
 
             if (value_read == 0) {
-                printf("disconnecting client on fd: %d\n", sd);
+                printf("disconnecting client on fd #%d\n", sd);
                 close(sd);
                 client_socket[i] = 0;
                 break;

@@ -37,15 +37,16 @@ int start_client_socket() {
     return request_socket;
 }
 
-char *get_username(char user_name[]) {
+void get_username(char user_name[]) {
 
     printf("enter username: ");
-    fgets(user_name, strlen(user_name), stdin);
+    int n = 0;
+    while ((user_name[n++] = getchar()) != '\n');
+    printf("\n");
 
-    user_name[strlen(user_name)-1] = ':';
-    user_name[strlen(user_name)] = ' ';
-
-    return user_name;
+    user_name[n-1] = ':';
+    user_name[n] = ' ';
+    user_name[n+1] = '\0';
 }
 
 int build_fd_set(fd_set* read_fds, int request_socket) {
@@ -57,23 +58,36 @@ int build_fd_set(fd_set* read_fds, int request_socket) {
     return max_sd;
 }
 
-void accept_broadcast(int request_socket, fd_set *read_fds) {
-    char incoming_buff[1024];
+int accept_broadcast(int request_socket, fd_set *read_fds) {
+    char incoming_buff[1024] = {0};
+    int values_read;
 
-    if (FD_ISSET(request_socket, read_fds)) 
-        read(request_socket, incoming_buff, sizeof(incoming_buff));
+    if (FD_ISSET(request_socket, read_fds)) {
+        values_read = read(request_socket, incoming_buff, sizeof(incoming_buff));
+        if (values_read == 0)
+            return 0;
+    }
 
     printf("%s\n", incoming_buff);
+    return 1;
 }
 
-void send_messages(int request_socket, fd_set *read_fds, char username[]) {
-    char outgoing_buff[1024];
-    int username_len = strlen(username);
+int send_messages(int request_socket, fd_set *read_fds, char username[]) {
+    char outgoing_buff[1024] = {0};
+    char input_buff[1024] = {0};
     strcpy(outgoing_buff, username);
-    int n = username_len;
+    int n = 0;
 
     if (FD_ISSET(STDIN_FILENO, read_fds)) {
-        while ((outgoing_buff[n++] = getchar()) != '\n');
+        while ((input_buff[n++] = getchar()) != '\n');
+        input_buff[n] = '\0';
+        
+        if (strncmp(input_buff, "exit", 4) == 0) 
+            return 0;
+
+        strcat(outgoing_buff, input_buff);
+
         write(request_socket, outgoing_buff, strlen(outgoing_buff));
     }
+    return 1;
 }
