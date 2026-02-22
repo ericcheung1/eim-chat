@@ -11,4 +11,6 @@ void accept_new_client(int listen_socket, fd_set *read_fds, int client_socket[],
 
 void handle_client_data(int max_clients, int client_socket[], fd_set *readfds);
 
+int exit_check(fd_set *readfds);
+
 #endif
